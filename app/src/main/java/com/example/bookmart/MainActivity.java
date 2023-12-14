@@ -2,6 +2,8 @@ package com.example.bookmart;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.fragment.app.Fragment;
@@ -16,20 +18,25 @@ public class MainActivity extends AppCompatActivity {
     SaleFragment saleFragment;
     AccountFragment accountFragment;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Retrieve user details from the intent
+        Intent intent = getIntent();
+        String userId = intent.getStringExtra("userId");
+        String userEmail = intent.getStringExtra("userEmail");
+        int userCoins = intent.getIntExtra("userCoins", 0); // Default value is 0 if not found
+
+        // Pass user details to the home fragment
+        homeFragment = HomeFragment.newInstance(userId, userEmail, userCoins);
+        loadFragment(homeFragment);
+
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         // Initialize your fragments
-        homeFragment = new HomeFragment();
         saleFragment = new SaleFragment();
         accountFragment = new AccountFragment();
-
-        // Set the default fragment when the activity starts
-        loadFragment(homeFragment);
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -53,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
         transaction.commit();
     }
+
 }

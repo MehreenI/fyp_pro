@@ -15,6 +15,9 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
+
+        Intent intent = new Intent(getActivity(), login.class);
+        startActivity(intent);
 //        award = view.findViewById(R.id.getAward);
 //        award.setOnClickListener(new View.OnClickListener() {
 //            @Override

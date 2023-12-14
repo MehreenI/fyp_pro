@@ -4,6 +4,8 @@ package com.example.manager;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.bookmart.Manager;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,28 +74,33 @@ public class CoinManager extends Manager{
             // Handle the case where the user doesn't have enough coins.
         }
     }
-    public void addCoinsToFirebase(String userId, int amount) {
-        DatabaseReference userCoinsRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("totalCoins");
+    public void addCoinsToFirebase(String userId, int coinsToAdd) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
 
-        userCoinsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.child("coin").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int currentCoins = dataSnapshot.exists() ? dataSnapshot.getValue(Integer.class) : 0;
-                int newTotalCoins = currentCoins + amount;
+                if (dataSnapshot.exists()) {
+                    int currentCoins = dataSnapshot.getValue(Integer.class);
+                    int newCoins = currentCoins + coinsToAdd;
 
-                // Update the total coins in Firebase
-                userCoinsRef.setValue(newTotalCoins);
-
-                // Optionally, you can update the local totalCoins variable if needed
-                totalCoins = newTotalCoins;
+                    // Update the coins in the database
+                    userRef.child("coin").setValue(newCoins);
+                } else {
+                    // Handle the case where coins data is not available
+                    Log.e("Firebase", "User coins data not found");
+                }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle any errors if necessary
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors if any
+                Log.e("Firebase", "Error updating user coins: " + databaseError.getMessage());
             }
         });
     }
+
+
 
 
 }

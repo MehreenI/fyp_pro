@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manager.CoinManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,10 +36,13 @@ import android.widget.Toast;
 
 import com.example.bookmart.GoogleAdMobManager;
 public class HomeFragment extends Fragment {
+
+    private static final String ARG_USER_ID = "userId";
+    private static final String ARG_USER_EMAIL = "userEmail";
+    private static final String ARG_USER_COINS = "userCoins";
+
     private RecyclerView recyclerView;
     private BookAdapter bookAdapter;
-
-
 
     private List<ImageUpload> bookList;
 
@@ -49,11 +54,22 @@ public class HomeFragment extends Fragment {
     private Button allButton, academicButton, generalButton,coin;
 
     TextView coinTextView;
+    private CoinManager coinManager;
 
-
+    public static HomeFragment newInstance(String userId, String userEmail, int userCoins) {
+        HomeFragment fragment = new HomeFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_USER_ID, userId);
+        args.putString(ARG_USER_EMAIL, userEmail);
+        args.putInt(ARG_USER_COINS, userCoins);
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        coinTextView = view.findViewById(R.id.coin);
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -66,6 +82,24 @@ public class HomeFragment extends Fragment {
         coin = view.findViewById(R.id.getCoin);
 
         coinTextView = view.findViewById(R.id.coin);
+
+        // Retrieve user details from the arguments
+        if (getArguments() != null) {
+
+            String userId = getArguments().getString(ARG_USER_ID);
+            String userEmail = getArguments().getString(ARG_USER_EMAIL);
+            int userCoins = getArguments().getInt(ARG_USER_COINS, 0); // Default value is 0 if not found
+
+            // Log user details
+            Log.d(TAG, "User ID: " + userId);
+            Log.d(TAG, "User Email: " + userEmail);
+            Log.d(TAG, "User Coins: " + userCoins);
+
+
+            // Now you have user details, update UI or perform any other actions
+            // Example: Update coin count TextView
+            coinTextView.setText(String.valueOf(userCoins));
+        }
 
         // Set a click listener for the items in the RecyclerView
         bookAdapter.setOnItemClickListener(position -> {
@@ -121,22 +155,33 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // Inside your addCoinsCallback Runnable
         addCoinsCallback = new Runnable() {
             @Override
             public void run() {
                 // Increment coins in Firebase
-                int coinsToAdd = 10;
-                String userId = "dummyuser";
-                CoinManager coinManager = AppController.getInstance().getManager(CoinManager.class);
+                int coinsToAdd = 10; // or any other amount you want to reward
 
-                // Add coins to Firebase
-                coinManager.addCoinsToFirebase(userId, coinsToAdd);
-                updateCoinTextView();
+                // Get the currently logged-in user ID
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null) {
+                    String userId = currentUser.getUid();
 
+                    CoinManager coinManager = AppController.getInstance().getManager(CoinManager.class);
 
-                // Display a toast or perform any other actions
-                Log.d(TAG, "give addCoins(" + coinsToAdd + ")");
-                Toast.makeText(activity, "Reward Given: +" + coinsToAdd + " coins", Toast.LENGTH_SHORT).show();
+                    // Add coins to Firebase
+                    coinManager.addCoinsToFirebase(userId, coinsToAdd);
+
+                    // Update the UI or perform any other actions
+                    updateCoinTextView();
+
+                    // Display a toast or perform any other actions
+                    Log.d(TAG, "give addCoins(" + coinsToAdd + ") to user: " + userId);
+                    Toast.makeText(activity, "Reward Given: +" + coinsToAdd + " coins", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "User is not logged in");
+                    // Handle the case where the user is not logged in
+                }
             }
         };
 

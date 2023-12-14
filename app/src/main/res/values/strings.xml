@@ -27,4 +27,5 @@ Set price
     <string name="dontforget">Don’t  miss a day or you have to start over again</string>
     <string name="skip">Skip for Now</string>
     <string name="create_Account">Create Account</string>
+    <string name="by_signing_">siging by</string>
 </resources>
