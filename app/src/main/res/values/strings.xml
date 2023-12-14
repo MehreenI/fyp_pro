@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">BOOKMART</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello </string>
+    <string name="set_price">
+Set price
+</string>
+    <string name="Add_Post">Add Post</string>
+    <string name="fav">Favourite\n</string>
+    <string name="loc">Karachi\n</string>
+    <string name="des">Academic Book</string>
+    <string name="interested">interested</string>
+    <string name="offer">offer\n</string>
+    <string name="book">Book Image\n</string>
+    <string name="coin_heading">Your Coins</string>
+    <string name="coin">0</string>
+    <string name="getCoin">Tap to Get More Coins</string>
+    <string name="Add_fea_Post">Add a Featured Post</string>
+
+    <string-array name="book_category">
+        <item>Select Category</item>
+        <item>Academic</item>
+        <item>General</item>
+    </string-array>
+
+    <string name="reward">Today\'s reward is ready</string>
+    <string name="dontforget">Don’t  miss a day or you have to start over again</string>
+    <string name="skip">Skip for Now</string>
+    <string name="create_Account">Create Account</string>
+</resources>
