@@ -67,6 +67,7 @@ public class login extends AppCompatActivity {
                         String userId = firebaseAuth.getCurrentUser().getUid();
                         String userEmail = firebaseAuth.getCurrentUser().getEmail();
 
+
                         // Fetch user's coins from Firebase or any other source
                         fetchUserCoinsFromFirebase(userId, new CoinFetchCallback() {
                             public void onCoinsFetched(int userCoins) {

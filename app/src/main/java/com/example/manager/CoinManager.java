@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.bookmart.Manager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +20,8 @@ public class CoinManager extends Manager{
     //region Attributes
     private final String TAG = "CoinManager";
     private int totalCoins;
+    private String userId;
+
     private DatabaseReference databaseReference;
     //endregion Attributes
 
@@ -27,15 +31,22 @@ public class CoinManager extends Manager{
 
     public CoinManager() {
     }
-    public CoinManager(String userId) {
-//        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("totalCoins");
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child("dummyuser").child("totalCoins");
-        Initialize();
+    public CoinManager(Context context) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+            databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("coin");
+            // Initialize the manager
+            Initialize();
+        } else {
+            // User is not signed in. Handle this case as needed.
+            Log.e(TAG, "User is not signed in");
+        }
     }
 
     @Override
     public void Initialize() {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -44,11 +55,18 @@ public class CoinManager extends Manager{
                     totalCoins = 0;
                 }
             }
+
             @Override
-            public void onCancelled(DatabaseError databaseError) { }
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle errors if any
+                Log.e(TAG, "Error reading total coins: " + databaseError.getMessage());
+            }
         });
         setInitialized(true);
+
+        Log.d(TAG, "Coin Manager Coins: " + totalCoins);
     }
+
 
     public int getTotalCoins()
     {

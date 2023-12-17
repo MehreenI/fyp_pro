@@ -3,24 +3,43 @@ package com.example.bookmart;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.bookmart.databinding.ActivityMainBinding;
+import com.example.manager.FirebaseManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
+
+    //region Attributes
+    //region Class Constants
+    private ActivityMainBinding actBinding;
+    private Activity activity;
+    private final String TAG = "MainActivity";
+    private FirebaseManager firebaseManager;
+    //endregion Class Constants
+
     HomeFragment homeFragment;
     SaleFragment saleFragment;
     AccountFragment accountFragment;
+    //endregion Attributes
 
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        actBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(actBinding.getRoot());
+        activity = this;
+        AppController.getInstance().setCurrentActivity(activity);
+
 
         // Retrieve user details from the intent
         Intent intent = getIntent();
@@ -32,13 +51,12 @@ public class MainActivity extends AppCompatActivity {
         homeFragment = HomeFragment.newInstance(userId, userEmail, userCoins);
         loadFragment(homeFragment);
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         // Initialize your fragments
         saleFragment = new SaleFragment();
         accountFragment = new AccountFragment();
 
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+        actBinding.bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId(); // Get the selected item's ID

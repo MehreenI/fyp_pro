@@ -1,6 +1,8 @@
 package com.example.bookmart;
 
 
+import android.app.Activity;
+
 import com.example.manager.CoinManager;
 import com.example.manager.FirebaseManager;
 import com.example.manager.UserManager;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AppController {
+
+    //region Singleton
     private static AppController instance;
     public static synchronized AppController getInstance() {
         if (instance == null) {
@@ -16,6 +20,13 @@ public class AppController {
         }
         return instance;
     }
+    //endregion Singleton
+
+    //region Attributes
+    public static String userId;
+    private Activity currentActivity;
+    //endregion Attributes
+
     private AppController() {
         addManager(FirebaseManager.class, new FirebaseManager());
         addManager(CoinManager.class, new CoinManager());
@@ -33,5 +44,14 @@ public class AppController {
     }
 
 
+
+    //region Getter/Setter
+    public Activity getCurrentActivity() {
+        return currentActivity;
+    }
+    public void setCurrentActivity(Activity currentActivity) {
+        this.currentActivity = currentActivity;
+    }
+    //endregion Getter/Setter
 }
 

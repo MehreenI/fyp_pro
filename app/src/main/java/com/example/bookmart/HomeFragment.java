@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manager.CoinManager;
+import com.example.manager.FirebaseManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -48,13 +49,13 @@ public class HomeFragment extends Fragment {
 
     private final String TAG = "MainActivity";
     Runnable addCoinsCallback;
-
     private Activity activity;
 
     private Button allButton, academicButton, generalButton,coin;
 
     TextView coinTextView;
     private CoinManager coinManager;
+    String userId;
 
     public static HomeFragment newInstance(String userId, String userEmail, int userCoins) {
         HomeFragment fragment = new HomeFragment();
@@ -86,7 +87,7 @@ public class HomeFragment extends Fragment {
         // Retrieve user details from the arguments
         if (getArguments() != null) {
 
-            String userId = getArguments().getString(ARG_USER_ID);
+            userId = getArguments().getString(ARG_USER_ID);
             String userEmail = getArguments().getString(ARG_USER_EMAIL);
             int userCoins = getArguments().getInt(ARG_USER_COINS, 0); // Default value is 0 if not found
 
@@ -187,6 +188,7 @@ public class HomeFragment extends Fragment {
 
 
 
+
         fetchDataFromFirebase();
 
         return view;
@@ -202,10 +204,16 @@ public class HomeFragment extends Fragment {
     private void updateCoinTextView() {
         CoinManager coinManager = AppController.getInstance().getManager(CoinManager.class);
         int currentCoins = coinManager.getTotalCoins();
+        Log.d(TAG, "Current User Coins: " + currentCoins);
 
+        int firebaseCoins = AppController.getInstance().getManager(FirebaseManager.class).fetchUserCoinsFromFirebase(userId);
+        Log.d(TAG, "Current firebaseCoins Coins: " + firebaseCoins);
+
+        //        Log.d(TAG, "Current firebase Coins: " + AppController.getInstance().getManager(FirebaseManager.class));
         // Update the TextView with the current coin count
-        coinTextView.setText(String.valueOf(currentCoins));
+        coinTextView.setText(String.valueOf(firebaseCoins));
     }
+
 
     private void openBookDetailActivity(ImageUpload clickedItem) {
         // Create an intent to open the BookDetailActivity

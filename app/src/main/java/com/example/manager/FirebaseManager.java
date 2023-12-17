@@ -1,6 +1,8 @@
 package com.example.manager;
 
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.example.bookmart.Manager;
@@ -71,6 +73,38 @@ public class FirebaseManager extends Manager {
                 DBUserPath.child("favPostId").setValue(favPostIds);
             }
         }
+    }
+
+
+
+    public int fetchUserCoinsFromFirebase(String userId) {
+        // Declare userCoins as an array of size 1
+        final int[] userCoins = {0}; // Default value
+
+        // Reference to the "users" node in Firebase
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+        // Read user's coins value from Firebase
+        userRef.child("coin").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // User's coins value exists in the database
+                    userCoins[0] = dataSnapshot.getValue(Integer.class);
+                } else {
+                    // Handle the case where coins data is not available
+                    Log.e("Firebase", "User coins data not found");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors if any
+                Log.e("Firebase", "Error fetching user coins: " + databaseError.getMessage());
+            }
+        });
+
+        return userCoins[0];
     }
 
 }
