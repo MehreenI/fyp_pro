@@ -85,6 +85,8 @@ public class HomeFragment extends Fragment {
         coinTextView = view.findViewById(R.id.coin);
 
         coinManager = AppController.getInstance().getManager(CoinManager.class);
+        updateCoinTextView();
+
 
         // Retrieve user details from the arguments
         if (getArguments() != null) {
